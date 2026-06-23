@@ -1,4 +1,5 @@
 from modules.port_scanner import scan_port
+from modules.report_generator import generate_report
 
 print("=" * 40)
 print("      SentinelScan-AI v2.0")
@@ -22,3 +23,5 @@ if open_ports:
     print(f"Open Ports Found: {open_ports}")
 else:
     print("No open ports found.")
+
+generate_report(target, open_ports)
