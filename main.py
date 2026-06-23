@@ -1,9 +1,10 @@
 from modules.port_scanner import scan_port
 from modules.report_generator import generate_report
+from modules.banner_grabber import grab_banner
 import time
 
 print("=" * 40)
-print("      SentinelScan-AI v2.2")
+print("      SentinelScan-AI v2.5")
 print("=" * 40)
 
 target = input("Enter target IP address: ")
@@ -16,9 +17,14 @@ start_time = time.time()
 open_ports = []
 
 for port in range(start_port, end_port + 1):
+
     result = scan_port(target, port)
 
     if result:
+        banner = grab_banner(target, port)
+
+        print(f"    Banner: {banner}")
+
         open_ports.append(result)
 
 end_time = time.time()
