@@ -1,27 +1,36 @@
 from modules.port_scanner import scan_port
 from modules.report_generator import generate_report
+import time
 
 print("=" * 40)
-print("      SentinelScan-AI v2.0")
+print("      SentinelScan-AI v2.2")
 print("=" * 40)
 
 target = input("Enter target IP address: ")
 
-ports = [21, 22, 23, 25, 53, 80, 110, 443]
+start_port = int(input("Enter start port: "))
+end_port = int(input("Enter end port: "))
+
+start_time = time.time()
 
 open_ports = []
 
-for port in ports:
+for port in range(start_port, end_port + 1):
     result = scan_port(target, port)
 
     if result:
         open_ports.append(result)
 
-print("\nScan Complete")
+end_time = time.time()
 
-if open_ports:
-    print(f"Open Ports Found: {open_ports}")
-else:
-    print("No open ports found.")
+print("\n" + "=" * 40)
+print("SCAN SUMMARY")
+print("=" * 40)
+print(f"Target: {target}")
+print(f"Ports Scanned: {end_port - start_port + 1}")
+print(f"Open Ports: {len(open_ports)}")
+print(f"Closed Ports: {(end_port - start_port + 1) - len(open_ports)}")
+print(f"Scan Time: {round(end_time - start_time, 2)} seconds")
+print("=" * 40)
 
 generate_report(target, open_ports)

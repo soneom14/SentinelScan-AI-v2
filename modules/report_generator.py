@@ -9,6 +9,8 @@ def generate_report(target, open_ports):
         report.write(f"Target: {target}\n")
         report.write(f"Scan Time: {datetime.now()}\n\n")
 
+        report.write(f"Total Open Ports: {len(open_ports)}\n\n")
+
         if open_ports:
             report.write("Open Ports:\n")
             for port in open_ports:
