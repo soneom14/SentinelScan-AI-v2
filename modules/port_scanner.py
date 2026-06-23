@@ -1,4 +1,7 @@
 import socket
+from colorama import Fore, init
+
+init(autoreset=True)
 
 def scan_port(host, port):
     try:
@@ -13,11 +16,12 @@ def scan_port(host, port):
             except:
                 service = "Unknown"
 
-            print(f"[+] Port {port} OPEN ({service})")
+            print(Fore.GREEN + f"[+] Port {port} OPEN ({service})")
             return port
 
+        print(Fore.RED + f"[-] Port {port} CLOSED")
         return None
 
     except Exception as e:
-        print(f"Error scanning port {port}: {e}")
+        print(Fore.YELLOW + f"Error: {e}")
         return None
