@@ -24,11 +24,19 @@ end_port = int(input("Enter end port: "))
 start_time = time.time()
 
 # Multi-threaded scan
-open_ports = threaded_scan(
+results = threaded_scan(
     target_ip,
     start_port,
     end_port
 )
+
+open_ports = []
+
+for port, is_open, service in results:
+
+    if is_open:
+        print(f"[+] Port {port} OPEN ({service})")
+        open_ports.append(port)
 
 end_time = time.time()
 

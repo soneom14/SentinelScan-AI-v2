@@ -1,7 +1,4 @@
 import socket
-from colorama import Fore, init
-
-init(autoreset=True)
 
 def scan_port(host, port):
     try:
@@ -9,6 +6,7 @@ def scan_port(host, port):
         sock.settimeout(1)
 
         result = sock.connect_ex((host, port))
+        sock.close()
 
         if result == 0:
             try:
@@ -16,12 +14,9 @@ def scan_port(host, port):
             except:
                 service = "Unknown"
 
-            print(Fore.GREEN + f"[+] Port {port} OPEN ({service})")
-            return port
+            return (port, True, service)
 
-        print(Fore.RED + f"[-] Port {port} CLOSED")
-        return None
+        return (port, False, None)
 
-    except Exception as e:
-        print(Fore.YELLOW + f"Error: {e}")
-        return None
+    except:
+        return (port, False, None)
