@@ -1,6 +1,7 @@
 import time
 import socket
 
+from modules.risk_analyzer import get_risk
 from modules.threaded_scanner import threaded_scan
 from modules.report_generator import generate_report
 
@@ -31,8 +32,26 @@ results = threaded_scan(
 )
 
 open_ports = []
+risk_data = []
 
 for port, is_open, service in results:
+
+    if is_open:
+
+        risk = get_risk(port)
+
+        print(
+            f"[+] Port {port} OPEN ({service}) "
+            f"[Risk: {risk}]"
+        )
+
+        open_ports.append(port)
+
+        risk_data.append({
+            "port": port,
+            "service": service,
+            "risk": risk
+        })
 
     if is_open:
         print(f"[+] Port {port} OPEN ({service})")
@@ -52,4 +71,22 @@ print(f"Open Port List: {open_ports}")
 print(f"Scan Time: {round(end_time - start_time, 2)} seconds")
 print("=" * 40)
 
-generate_report(target, open_ports)
+overall_risk = "LOW"
+
+for item in risk_data:
+
+    if item["risk"] == "HIGH":
+        overall_risk = "HIGH"
+        break
+
+    elif item["risk"] == "MEDIUM":
+        overall_risk = "MEDIUM"
+
+print(f"\nOverall Risk Score: {overall_risk}")
+
+generate_report(
+    target,
+    open_ports,
+    risk_data,
+    overall_risk
+)

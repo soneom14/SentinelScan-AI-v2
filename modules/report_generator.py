@@ -1,79 +1,132 @@
 from datetime import datetime
 
-def generate_report(target, open_ports):
+def generate_report(
+    target,
+    open_ports,
+    risk_data,
+    overall_risk
+):
 
     txt_file = f"reports/report_{target}.txt"
     html_file = f"reports/report_{target}.html"
 
-    # TXT REPORT
     with open(txt_file, "w") as report:
 
-        report.write("SentinelScan-AI v3 Report\n")
-        report.write("=" * 40 + "\n")
+        report.write("SentinelScan-AI v4 Report\n")
+        report.write("=" * 50 + "\n")
         report.write(f"Target: {target}\n")
-        report.write(f"Scan Time: {datetime.now()}\n\n")
+        report.write(f"Generated: {datetime.now()}\n")
+        report.write(f"Overall Risk: {overall_risk}\n\n")
 
-        report.write(f"Open Ports Found: {len(open_ports)}\n\n")
+        for item in risk_data:
 
-        for port in open_ports:
-            report.write(f"- Port {port}\n")
+            report.write(
+                f"Port {item['port']} | "
+                f"{item['service']} | "
+                f"{item['risk']}\n"
+            )
 
-    # HTML REPORT
     html_content = f"""
-    <!DOCTYPE html>
-    <html>
-    <head>
-        <title>SentinelScan-AI Report</title>
+<!DOCTYPE html>
+<html>
 
-        <style>
-            body {{
-                font-family: Arial;
-                background-color: #0d1117;
-                color: white;
-                padding: 40px;
-            }}
+<head>
 
-            h1 {{
-                color: #58a6ff;
-            }}
+<title>SentinelScan-AI Report</title>
 
-            .card {{
-                background: #161b22;
-                padding: 20px;
-                border-radius: 10px;
-                margin-bottom: 20px;
-            }}
+<style>
 
-            ul {{
-                line-height: 1.8;
-            }}
-        </style>
-    </head>
+body {{
+    background:#0d1117;
+    color:white;
+    font-family:Arial;
+    padding:30px;
+}}
 
-    <body>
+.card {{
+    background:#161b22;
+    padding:20px;
+    border-radius:10px;
+    margin-bottom:20px;
+}}
 
-        <h1>SentinelScan-AI v3 Report</h1>
+table {{
+    width:100%;
+    border-collapse:collapse;
+}}
 
-        <div class="card">
-            <h3>Target Information</h3>
-            <p><b>Target:</b> {target}</p>
-            <p><b>Generated:</b> {datetime.now()}</p>
-        </div>
+th, td {{
+    padding:12px;
+    border:1px solid #30363d;
+}}
 
-        <div class="card">
-            <h3>Open Ports Found ({len(open_ports)})</h3>
+th {{
+    background:#21262d;
+}}
 
-            <ul>
-                {''.join([f'<li>Port {port}</li>' for port in open_ports])}
-            </ul>
-        </div>
+.high {{
+    color:red;
+}}
 
-    </body>
-    </html>
-    """
+.medium {{
+    color:orange;
+}}
 
-    with open(html_file, "w") as html_report:
-        html_report.write(html_content)
+.low {{
+    color:lime;
+}}
+
+</style>
+
+</head>
+
+<body>
+
+<h1>SentinelScan-AI v4 Report</h1>
+
+<div class="card">
+<h3>Target Information</h3>
+
+<p><b>Target:</b> {target}</p>
+<p><b>Generated:</b> {datetime.now()}</p>
+<p><b>Overall Risk:</b> {overall_risk}</p>
+
+</div>
+
+<div class="card">
+
+<h3>Open Ports ({len(open_ports)})</h3>
+
+<table>
+
+<tr>
+<th>Port</th>
+<th>Service</th>
+<th>Risk</th>
+</tr>
+
+{''.join([
+f'''
+<tr>
+<td>{item["port"]}</td>
+<td>{item["service"]}</td>
+<td class="{item["risk"].lower()}">{item["risk"]}</td>
+</tr>
+'''
+for item in risk_data
+])}
+
+</table>
+
+</div>
+
+</body>
+
+</html>
+"""
+
+    with open(html_file, "w") as report:
+        report.write(html_content)
 
     print(f"\n[+] TXT Report Saved: {txt_file}")
     print(f"[+] HTML Report Saved: {html_file}")
