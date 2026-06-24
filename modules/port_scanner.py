@@ -9,14 +9,29 @@ def scan_port(host, port):
         sock.close()
 
         if result == 0:
+
             try:
                 service = socket.getservbyport(port)
+
             except:
                 service = "Unknown"
 
-            return (port, True, service)
+            return {
+                "port": port,
+                "is_open": True,
+                "service": service
+            }
 
-        return (port, False, None)
+        return {
+            "port": port,
+            "is_open": False,
+            "service": None
+        }
 
     except:
-        return (port, False, None)
+
+        return {
+            "port": port,
+            "is_open": False,
+            "service": None
+        }

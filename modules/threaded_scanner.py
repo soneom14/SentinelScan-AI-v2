@@ -8,11 +8,23 @@ def threaded_scan(target, start_port, end_port):
     with ThreadPoolExecutor(max_workers=100) as executor:
 
         futures = [
-            executor.submit(scan_port, target, port)
-            for port in range(start_port, end_port + 1)
+            executor.submit(
+                scan_port,
+                target,
+                port
+            )
+            for port in range(
+                start_port,
+                end_port + 1
+            )
         ]
 
         for future in futures:
-            results.append(future.result())
+            results.append(
+                future.result()
+            )
 
-    return sorted(results, key=lambda x: x[0])
+    return sorted(
+        results,
+        key=lambda x: x["port"]
+    )

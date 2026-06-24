@@ -1,4 +1,6 @@
 from datetime import datetime
+import json
+
 
 def generate_report(
     target,
@@ -9,11 +11,17 @@ def generate_report(
 
     txt_file = f"reports/report_{target}.txt"
     html_file = f"reports/report_{target}.html"
+    json_file = f"reports/report_{target}.json"
+
+    # ======================
+    # TXT REPORT
+    # ======================
 
     with open(txt_file, "w") as report:
 
         report.write("SentinelScan-AI v4 Report\n")
         report.write("=" * 50 + "\n")
+
         report.write(f"Target: {target}\n")
         report.write(f"Generated: {datetime.now()}\n")
         report.write(f"Overall Risk: {overall_risk}\n\n")
@@ -23,8 +31,46 @@ def generate_report(
             report.write(
                 f"Port {item['port']} | "
                 f"{item['service']} | "
-                f"{item['risk']}\n"
+                f"{item['risk']} | "
+                f"{item['banner']}\n"
             )
+
+    # ======================
+    # JSON REPORT
+    # ======================
+
+    json_data = {
+        "target": target,
+        "generated": str(datetime.now()),
+        "overall_risk": overall_risk,
+        "ports": risk_data
+    }
+
+    with open(json_file, "w") as report:
+        json.dump(
+            json_data,
+            report,
+            indent=4
+        )
+
+    # ======================
+    # HTML REPORT
+    # ======================
+
+    rows = ""
+
+    for item in risk_data:
+
+        rows += f"""
+        <tr>
+            <td>{item['port']}</td>
+            <td>{item['service']}</td>
+            <td>{item['banner']}</td>
+            <td class="{item['risk'].lower()}">
+                {item['risk']}
+            </td>
+        </tr>
+        """
 
     html_content = f"""
 <!DOCTYPE html>
@@ -41,6 +87,10 @@ body {{
     color:white;
     font-family:Arial;
     padding:30px;
+}}
+
+h1 {{
+    color:#58a6ff;
 }}
 
 .card {{
@@ -66,14 +116,17 @@ th {{
 
 .high {{
     color:red;
+    font-weight:bold;
 }}
 
 .medium {{
     color:orange;
+    font-weight:bold;
 }}
 
 .low {{
     color:lime;
+    font-weight:bold;
 }}
 
 </style>
@@ -85,36 +138,31 @@ th {{
 <h1>SentinelScan-AI v4 Report</h1>
 
 <div class="card">
-<h3>Target Information</h3>
+
+<h2>Target Information</h2>
 
 <p><b>Target:</b> {target}</p>
+
 <p><b>Generated:</b> {datetime.now()}</p>
+
 <p><b>Overall Risk:</b> {overall_risk}</p>
 
 </div>
 
 <div class="card">
 
-<h3>Open Ports ({len(open_ports)})</h3>
+<h2>Open Ports ({len(open_ports)})</h2>
 
 <table>
 
 <tr>
 <th>Port</th>
 <th>Service</th>
+<th>Banner</th>
 <th>Risk</th>
 </tr>
 
-{''.join([
-f'''
-<tr>
-<td>{item["port"]}</td>
-<td>{item["service"]}</td>
-<td class="{item["risk"].lower()}">{item["risk"]}</td>
-</tr>
-'''
-for item in risk_data
-])}
+{rows}
 
 </table>
 
@@ -130,3 +178,4 @@ for item in risk_data
 
     print(f"\n[+] TXT Report Saved: {txt_file}")
     print(f"[+] HTML Report Saved: {html_file}")
+    print(f"[+] JSON Report Saved: {json_file}")

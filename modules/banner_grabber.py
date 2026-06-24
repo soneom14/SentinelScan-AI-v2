@@ -1,20 +1,29 @@
 import socket
 
 def grab_banner(host, port):
+
     try:
+
         sock = socket.socket()
         sock.settimeout(2)
 
         sock.connect((host, port))
 
-        banner = sock.recv(1024).decode(errors="ignore").strip()
+        if port == 80:
+            sock.send(
+                b"HEAD / HTTP/1.0\r\n\r\n"
+            )
+
+        banner = sock.recv(
+            1024
+        ).decode(
+            errors="ignore"
+        )
 
         sock.close()
 
-        if banner:
-            return banner
-
-        return "Banner not available"
+        return banner.strip()
 
     except:
-        return "Banner not available"
+
+        return "Unknown"
