@@ -12,15 +12,16 @@ def generate_report(
     txt_file = f"reports/report_{target}.txt"
     html_file = f"reports/report_{target}.html"
     json_file = f"reports/report_{target}.json"
+    xml_file = f"reports/report_{target}.xml"
 
     # ======================
     # TXT REPORT
     # ======================
 
-    with open(txt_file, "w") as report:
+    with open(txt_file, "w", encoding="utf-8") as report:
 
         report.write("SentinelScan-AI v4 Report\n")
-        report.write("=" * 50 + "\n")
+        report.write("=" * 60 + "\n")
 
         report.write(f"Target: {target}\n")
         report.write(f"Generated: {datetime.now()}\n")
@@ -46,7 +47,8 @@ def generate_report(
         "ports": risk_data
     }
 
-    with open(json_file, "w") as report:
+    with open(json_file, "w", encoding="utf-8") as report:
+
         json.dump(
             json_data,
             report,
@@ -74,9 +76,12 @@ def generate_report(
 
     html_content = f"""
 <!DOCTYPE html>
+
 <html>
 
 <head>
+
+<meta charset="UTF-8">
 
 <title>SentinelScan-AI Report</title>
 
@@ -173,9 +178,56 @@ th {{
 </html>
 """
 
-    with open(html_file, "w") as report:
+    with open(html_file, "w", encoding="utf-8") as report:
+
         report.write(html_content)
+
+    # ======================
+    # XML REPORT
+    # ======================
+
+    xml_content = f"""<?xml version="1.0" encoding="UTF-8"?>
+
+<SentinelScanAI>
+
+    <Target>{target}</Target>
+
+    <Generated>{datetime.now()}</Generated>
+
+    <OverallRisk>{overall_risk}</OverallRisk>
+
+    <Ports>
+"""
+
+    for item in risk_data:
+
+        xml_content += f"""
+
+        <Port>
+
+            <Number>{item['port']}</Number>
+
+            <Service>{item['service']}</Service>
+
+            <Banner><![CDATA[{item['banner']}]]></Banner>
+
+            <Risk>{item['risk']}</Risk>
+
+        </Port>
+"""
+
+    xml_content += """
+
+    </Ports>
+
+</SentinelScanAI>
+"""
+
+    with open(xml_file, "w", encoding="utf-8") as report:
+
+        report.write(xml_content)
 
     print(f"\n[+] TXT Report Saved: {txt_file}")
     print(f"[+] HTML Report Saved: {html_file}")
     print(f"[+] JSON Report Saved: {json_file}")
+    print(f"[+] XML Report Saved: {xml_file}")
